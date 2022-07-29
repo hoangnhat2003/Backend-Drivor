@@ -25,8 +25,6 @@ public class Account {
 
     private String username;
     private String name;
-    private Integer chat_id;
-
     @JsonIgnore
     private String password;
     private String email;
@@ -34,7 +32,7 @@ public class Account {
     private String online_status;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(	name = "account_roles",
+    @JoinTable(name = "account_roles",
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
