@@ -1,27 +1,40 @@
 pipeline {
     agent any
 
+    environment {
+    HEROKU_API_KEY = credentials('heroku-api-key')
+    }
+
+    parameters {
+        string(name: 'APP_NAME', defaultValue: 'java-app-jenkins', description: 'Heroku app name?')
+    }
+
     stages {
         stage('Compile and Clean') {
             steps {
+              sh 'mvn clean install'
             }
         }
         stage('Build Docker image'){
             steps {
+              sh 'docker build -t  nhathoang/java-web-app:lastest .'
             }
         }
-        stage('Docker Login'){
+        stage('Login Heroku Registry'){
             steps {
+              sh 'docker login --username=_ --password=${HEROKU_API_KEY} registry.heroku.com'
             }
         }
-        stage('Docker Push'){
+        stage('Push to Heroku registry'){
             steps {
-                sh 'docker push nhathoang/jenkins_springboot_deploy:lastest'
+              sh 'docker tag nhathoang/java-web-app:lastest registry.heroku.com/$APP_NAME/web'
+              sh 'docker push registry.heroku.com/$APP_NAME/web'
             }
         }
-        stage('Heroku deploy'){
-            steps {
-            }
+        stage('Release the image') {
+             steps {
+                sh 'heroku container:release web --app=$APP_NAME'
+             }
         }
     }
 
