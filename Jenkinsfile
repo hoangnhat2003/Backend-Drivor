@@ -13,6 +13,11 @@ pipeline {
     }
 
     stages {
+        stage('Clean and Install'){
+            steps {
+              sh 'mvn clean install'
+            }
+        }
         stage('Build Docker image'){
             steps {
               sh 'docker build -t  nhathoang/java-web-app:lastest .'
